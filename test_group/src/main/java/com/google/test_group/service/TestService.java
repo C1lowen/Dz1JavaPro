@@ -1,4 +1,8 @@
-package com.google.test_group;
+package com.google.test_group.service;
+
+import com.google.test_group.controller.Ticket;
+import com.google.test_group.dao.TestDAO;
+
 
 import java.util.List;
 
