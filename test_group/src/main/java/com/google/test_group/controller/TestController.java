@@ -1,13 +1,18 @@
 package com.google.test_group.controller;
 
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 
 import com.google.test_group.service.TestService;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
@@ -25,6 +30,30 @@ public class TestController {
     public List<Ticket> printFreeTicket() {
         return service.executeFree();
     }
+
+
+    @GetMapping("/tickets/headers")
+    public String test(HttpServletRequest httpServletRequest) {
+        return httpServletRequest.getHeader("boo");
+    }
+
+    @GetMapping("/tickets/headers2")
+    public String test2(@RequestHeader("Custom-Header") String httpServletRequest) {
+        return "boo = " + httpServletRequest;
+    }
+
+    @GetMapping("/tickets/custom-headers")
+    public ResponseEntity<String> getResponseWithHeaders() {
+       String responseBody = "This response has custom headers";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Custom-Header", "CustomValue");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(responseBody);
+    }
+
 
 
 //    @PostMapping("tickets/reservation/{src}/{dest}")
@@ -53,7 +82,7 @@ public class TestController {
 
 
     @PostMapping("tickets/reservation")
-    public String reservation3(@RequestBody ReservationRequest data) {        //3 способ             //2 способ
+    public String reservation3(@RequestBody @Validated ReservationRequest data) {        //3 способ
 
         boolean result = service.executeReservation(data.getSrc(), data.getDest());
 

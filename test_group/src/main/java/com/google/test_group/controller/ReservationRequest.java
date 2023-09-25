@@ -1,8 +1,13 @@
 package com.google.test_group.controller;
 
+
+import jakarta.validation.constraints.Size;
+
 public class ReservationRequest {
-    private String src;
-    private String dest;
+    @Size(min =3)
+    String src;
+    @Size(min =3)
+    String dest;
 
     public ReservationRequest() {
     }
@@ -27,4 +32,5 @@ public class ReservationRequest {
     public void setDest(String dest) {
         this.dest = dest;
     }
+
 }

@@ -1,7 +1,11 @@
 package com.google.test_group.controller;
 
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import jakarta.validation.constraints.Size;
+
 public class Ticket {
+
 
     Integer id;
     String src;
@@ -50,4 +54,6 @@ public class Ticket {
     public void setBooked(boolean booked) {
         isBooked = booked;
     }
+
+
 }

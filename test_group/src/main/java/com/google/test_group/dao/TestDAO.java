@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
 
 public class TestDAO {
     private List<Ticket> tickets = new ArrayList<>(
-           List.of( new Ticket(1, "Киев", "Одесса", true),   //true - забронировано
-            new Ticket(2, "Мариуполь", "Харьков", false),    //false - Не забронировано
+           List.of( new Ticket(1, "Киев", "Одесса", true),   //true - Не забронировано
+            new Ticket(2, "Мариуполь", "Харьков", false),    //false - забронировано
             new Ticket(3, "Одесса", "Житомир", true))
     );
     public List<Ticket> executeAll(){
