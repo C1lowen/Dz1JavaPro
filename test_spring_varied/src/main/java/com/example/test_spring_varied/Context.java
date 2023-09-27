@@ -110,6 +110,10 @@ public class Context {
             field.set(bean, beans.get(list.get(0)));
         }
 
+        if(countPrimary == 1) {
+            field.set(bean, beans.get(result));
+        }
+
         throw new RuntimeException();
     }
 
