@@ -42,9 +42,10 @@ public class Context {
             for (Field field : bean.getClass().getDeclaredFields()) {
                 if (field.isAnnotationPresent(Autowired.class)) {
                     field.setAccessible(true);
+
 //                    method1(field, bean);
-//                   method2(field, bean);
-//                    method3(field, bean);
+//                    method2(field, bean);
+                    method3(field, bean);
                 }
             }
         }
@@ -105,9 +106,11 @@ public class Context {
             }
         }
 
-        if(countPrimary == 0) method2(field, bean);
+        if(countPrimary == 0 && list.size() == 1){
+            field.set(bean, beans.get(list.get(0)));
+        }
 
-        field.set(bean, beans.get(result));
+        throw new RuntimeException();
     }
 
 
