@@ -18,6 +18,7 @@ public class TestSpringVariedApplication {
 
         MyServiceRel myService = context.getBean(MyServiceRel.class);
         myService.sayMyServiceRel();
+
     }
 
 }

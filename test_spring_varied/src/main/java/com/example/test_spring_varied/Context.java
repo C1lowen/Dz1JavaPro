@@ -2,14 +2,14 @@ package com.example.test_spring_varied;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 
 import java.awt.*;
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.List;
 
 public class Context {
 
@@ -18,6 +18,7 @@ public class Context {
     public Context(Class<?> configClass) throws Exception {
         scanComponents(configClass);
         autowireBeans();
+
     }
 
     public <T> T getBean(Class<T> clazz) {
@@ -41,18 +42,77 @@ public class Context {
             for (Field field : bean.getClass().getDeclaredFields()) {
                 if (field.isAnnotationPresent(Autowired.class)) {
                     field.setAccessible(true);
-                    field.set(bean, beans.get(field.getType()));
+//                    method1(field, bean);
+//                   method2(field, bean);
+//                    method3(field, bean);
                 }
             }
         }
     }
 
-    @Override
-    public String toString() {
-        StringBuffer sb =new StringBuffer();
-        for(var bean : beans.keySet()){
-            sb.append(bean + " ==> " + beans.get(bean) + System.lineSeparator());
+    private void method1(Field field, Object bean) throws Exception{
+        boolean found = false;
+        for (var bean2 : beans.keySet()) {
+            if (field.getType().isAssignableFrom(bean2)) {
+                field.set(bean, beans.get(bean2));
+                found = true;
+                break;
+            }
         }
-        return sb.toString();
+
+        if (!found){
+            field.set(bean, beans.get(field.getType()));
+        }
     }
+
+    private void method2(Field field, Object bean) throws Exception{
+        Class<?> clazz = null;
+        int count = 0;
+        for (var bean2 : beans.keySet()) {
+            if (field.getType().isAssignableFrom(bean2)) {
+                clazz = bean2;
+                count++;
+
+                if(count >= 2) {
+                    new RuntimeException().printStackTrace();
+                    return;
+                }
+            }
+        }
+
+        if(clazz != null) {
+            field.set(bean, beans.get(clazz));
+        }
+    }
+
+    private void method3(Field field, Object bean) throws Exception{
+        List<Class<?>> list = new ArrayList<>();
+
+        for (var bean2 : beans.keySet()) {
+            if (field.getType().isAssignableFrom(bean2)) {
+               list.add(bean2);
+            }
+        }
+
+        int countPrimary = 0;
+        Class<?> result = null;
+        for(var clazz : list){
+            if(clazz.isAnnotationPresent(Primary.class)){
+                countPrimary++;
+                result = clazz;
+                if(countPrimary >= 2){
+                    new RuntimeException().printStackTrace();
+                    return;
+                }
+            }
+        }
+
+        if(countPrimary == 0) method2(field, bean);
+
+        field.set(bean, beans.get(result));
+    }
+
+
+
+
 }

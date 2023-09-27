@@ -4,11 +4,10 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 @Component
-@Primary
-public class MyServiceRel implements MyService {
+public class MyServiceRel2 implements MyService {
 
     @Override
     public void sayMyServiceRel() {
-        System.out.println("sayMyServiceRel");
+        System.out.println("sayMyServiceRel2");
     }
 }
