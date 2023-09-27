@@ -74,8 +74,7 @@ public class Context {
                 count++;
 
                 if(count >= 2) {
-                    new RuntimeException().printStackTrace();
-                    return;
+                    throw new RuntimeException();
                 }
             }
         }
@@ -101,8 +100,7 @@ public class Context {
                 countPrimary++;
                 result = clazz;
                 if(countPrimary >= 2){
-                    new RuntimeException().printStackTrace();
-                    return;
+                    throw new RuntimeException();
                 }
             }
         }
