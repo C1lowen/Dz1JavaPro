@@ -1,13 +1,17 @@
 package com.example.test_spring_varied;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 import org.springframework.util.ClassUtils;
 
 import java.awt.*;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.List;
 
@@ -32,6 +36,9 @@ public class Context {
             for (Class<?> clazz : ClassScanner.findClasses(packageToScan)) {
                 if (clazz.isAnnotationPresent(Component.class)) {
                     beans.put(clazz, clazz.getDeclaredConstructor().newInstance());
+                }else if(clazz.isAnnotationPresent(Configuration.class)){
+                    beans.put(clazz, clazz.getDeclaredConstructor().newInstance());
+                    addBeanWithConfiguration(clazz);
                 }
             }
         }
@@ -42,48 +49,21 @@ public class Context {
             for (Field field : bean.getClass().getDeclaredFields()) {
                 if (field.isAnnotationPresent(Autowired.class)) {
                     field.setAccessible(true);
-
-//                    method1(field, bean);
-//                    method2(field, bean);
                     method3(field, bean);
                 }
             }
         }
     }
 
-    private void method1(Field field, Object bean) throws Exception{
-        boolean found = false;
-        for (var bean2 : beans.keySet()) {
-            if (field.getType().isAssignableFrom(bean2)) {
-                field.set(bean, beans.get(bean2));
-                found = true;
-                break;
-            }
-        }
-
-        if (!found){
-            field.set(bean, beans.get(field.getType()));
-        }
-    }
-
-    private void method2(Field field, Object bean) throws Exception{
-        Class<?> clazz = null;
-        int count = 0;
-        for (var bean2 : beans.keySet()) {
-            if (field.getType().isAssignableFrom(bean2)) {
-                clazz = bean2;
-                count++;
-
-                if(count >= 2) {
-                    throw new RuntimeException();
-                }
-            }
-        }
-
-        if(clazz != null) {
-            field.set(bean, beans.get(clazz));
-        }
-    }
+   private void addBeanWithConfiguration(Class<?> clazz) throws Exception{
+       Method[] methods = clazz.getDeclaredMethods();
+       for(Method method : methods){
+           if(method.isAnnotationPresent(Bean.class)){
+               Object objectReturnType = method.invoke(clazz.getDeclaredConstructor().newInstance());
+               beans.put(method.getClass(), objectReturnType);
+           }
+       }
+   }
 
     private void method3(Field field, Object bean) throws Exception{
         List<Class<?>> list = new ArrayList<>();
@@ -108,10 +88,12 @@ public class Context {
 
         if(countPrimary == 0 && list.size() == 1){
             field.set(bean, beans.get(list.get(0)));
+            return;
         }
 
         if(countPrimary == 1) {
             field.set(bean, beans.get(result));
+            return;
         }
 
         throw new RuntimeException();
