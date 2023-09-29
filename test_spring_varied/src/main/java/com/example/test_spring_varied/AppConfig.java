@@ -8,9 +8,16 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan("com.example")
 public class AppConfig {
 
-    @Bean
+
+
+    @Bean("newBean")
     public MyService myService() {
         return new MyServiceRel();
+    }
+
+    @Bean
+    MyController myService2(){
+        return new MyController();
     }
 
 }
