@@ -19,20 +19,19 @@ public class TestSpringVariedApplication {
 //        System.out.println(1);
 
 
-//        Context context = new Context(AppConfig.class);
-//
-//        System.out.println(context.getBean(MyController.class));
-//
-//        MyController controller = context.getBean(MyController.class);
-//
-//
-//        MyServiceRel myServiceRel = context.getBean(MyServiceRel.class);
-//
-//        MyService myService = context.getBean(MyService.class);
+        Context context = new Context(AppConfig.class);
 
-        System.out.println(Integer.bitCount(1));
-        System.out.println(Integer.bitCount(2));
-        System.out.println(Integer.bitCount(3));
+        System.out.println(context.getBean(MyController.class));
+
+        MyController controller = context.getBean(MyController.class);
+        controller.sayMyController();
+
+
+        MyServiceRel myServiceRel = context.getBean(MyServiceRel.class);
+
+        MyService myService = context.getBean(MyService.class);
+
+
 
 
 

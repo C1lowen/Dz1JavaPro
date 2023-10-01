@@ -7,8 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
-import org.springframework.util.ClassUtils;
+
 
 import java.awt.*;
 import java.lang.reflect.Field;
@@ -64,17 +63,20 @@ public class Context {
                     if(clazz.isAnnotationPresent(Configuration.class)){
                         addBeanWithConfiguration(clazz);
                     }
+
                 }
             }
         }
     }
 
     private void autowireBeans() throws Exception {
-        for (Object bean : beans.values()) {
-            for (Field field : bean.getClass().getDeclaredFields()) {
-                if (field.isAnnotationPresent(Autowired.class)) {
-                    field.setAccessible(true);
-                    method3(field, bean);
+        for (var mapObject : beans.values()){
+            for(Object bean : mapObject.values()) {
+                for (Field field : bean.getClass().getDeclaredFields()) {
+                    if (field.isAnnotationPresent(Autowired.class)) {
+                        field.setAccessible(true);
+                        checkPrimary(field, bean);
+                    }
                 }
             }
         }
@@ -87,12 +89,12 @@ public class Context {
                Object objectReturnType = method.invoke(clazz.getDeclaredConstructor().newInstance());
                Map<String, Object> stringObjectMap = beans.getOrDefault(objectReturnType.getClass(), new HashMap<>());
                beans.put(objectReturnType.getClass(), stringObjectMap);
-               stringObjectMap.put(method.getName(), clazz.getDeclaredConstructor().newInstance());
+               stringObjectMap.put(method.getName(), objectReturnType);
            }
        }
    }
 
-    private void method3(Field field, Object bean) throws Exception{
+    private void checkPrimary(Field field, Object bean) throws Exception{
         List<Class<?>> list = new ArrayList<>();
 
         for (var bean2 : beans.keySet()) {
@@ -104,22 +106,22 @@ public class Context {
         int countPrimary = 0;
         Class<?> result = null;
         for(var clazz : list){
-            if(clazz.isAnnotationPresent(Primary.class)){
+            if (clazz.isAnnotationPresent(Primary.class)) {
                 countPrimary++;
                 result = clazz;
-                if(countPrimary >= 2){
+                if (countPrimary >= 2) {
                     throw new RuntimeException();
                 }
             }
         }
 
         if(countPrimary == 0 && list.size() == 1){
-            field.set(bean, list.get(0));
+            field.set(bean, beans.get(list.get(0)).get(field.getName()));
             return;
         }
 
         if(countPrimary == 1) {
-            field.set(bean, beans.get(result));
+            field.set(bean, beans.get(result).get(field.getName()));
             return;
         }
 
@@ -136,9 +138,9 @@ public class Context {
         if(field.isAnnotationPresent(Qualifier.class)){
             Qualifier qualifier = field.getDeclaredAnnotation(Qualifier.class);
             String name = qualifier.value();
-            for(var nameBean : beans.get(beanClazz).values()) {
+            for(var nameBean : beans.get(beanClazz.getClass()).values()) {
                if(name.equals(nameBean)){
-                   return beans.get(beanClazz).get(nameBean);
+                   return beans.get(beanClazz.getClass()).get(nameBean);
                }
             }
         }
@@ -151,7 +153,5 @@ public class Context {
 
         return null;
     }
-
-
 
 }
