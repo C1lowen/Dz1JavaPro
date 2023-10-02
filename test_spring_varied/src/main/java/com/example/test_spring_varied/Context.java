@@ -11,7 +11,9 @@ import org.springframework.stereotype.Component;
 
 import java.awt.*;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.*;
 import java.util.List;
 
@@ -25,12 +27,11 @@ public class Context {
 
     }
 
-    public <T> T getBean(Class<T> clazz) {
-        return (T) beans.getOrDefault(clazz, new HashMap<>()).get(clazz.getSimpleName());
+    public <T> Collection<T> getBeans(Class<T> clazz) {
+        return (Collection<T>) beans.getOrDefault(clazz, new HashMap<>()).values();
     }
 
     public <T> T getBean(Class<T> clazz, String nameBean) {
-
         return (T) beans.getOrDefault(clazz, new HashMap<>()).get(nameBean);
     }
 
@@ -55,10 +56,12 @@ public class Context {
                         beanName = firstChar + clazz.getSimpleName().substring(1);
                     }
 
+                    Object newObject = checkTiming(clazz.getDeclaredConstructor().newInstance());
+
                     Map<String, Object> stringObjectMap = beans.getOrDefault(clazz, new HashMap<>());
                     beans.put(clazz, stringObjectMap);
 
-                    stringObjectMap.put(beanName, clazz.getDeclaredConstructor().newInstance());
+                    stringObjectMap.put(beanName, newObject);
 
                     if(clazz.isAnnotationPresent(Configuration.class)){
                         addBeanWithConfiguration(clazz);
@@ -67,6 +70,35 @@ public class Context {
                 }
             }
         }
+    }
+
+
+    public static Object checkTiming(Object clazz) throws Exception{
+        if(clazz.getClass().getInterfaces().length != 0) {
+            boolean checkTiming = false;
+            for (Method method : clazz.getClass().getDeclaredMethods()) {
+                if (method.isAnnotationPresent(Timing.class)) {
+                    checkTiming = true;
+                    break;
+                }
+            }
+
+            if (checkTiming) {
+                Object proxy = Proxy.newProxyInstance(clazz.getClass().getClassLoader(), clazz.getClass().getInterfaces(), new InvocationHandler() {
+                    @Override
+                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                        long start = System.currentTimeMillis();
+                        Object invoke = method.invoke(clazz, args);
+                        System.out.println("Время выполнения: " + (System.currentTimeMillis() - start));
+                        return invoke;
+                    }
+                });
+
+                return proxy;
+            }
+        }
+
+        return clazz;
     }
 
     private void autowireBeans() throws Exception {
@@ -125,7 +157,7 @@ public class Context {
             return;
         }
 
-        Object resultTestQualifier = testQualifier(field, bean);
+        Object resultTestQualifier = testQualifier(field, bean.getClass());
         if(resultTestQualifier != null){
             field.set(bean, resultTestQualifier);
         }
@@ -133,19 +165,19 @@ public class Context {
         throw new RuntimeException();
     }
 
-    private Object testQualifier(Field field, Object beanClazz){
+    private Object testQualifier(Field field, Class<?> beanClazz){
 
         if(field.isAnnotationPresent(Qualifier.class)){
             Qualifier qualifier = field.getDeclaredAnnotation(Qualifier.class);
             String name = qualifier.value();
-            for(var nameBean : beans.get(beanClazz.getClass()).values()) {
+            for(var nameBean : beans.get(beanClazz).keySet()) {
                if(name.equals(nameBean)){
-                   return beans.get(beanClazz.getClass()).get(nameBean);
+                   return beans.get(beanClazz).get(nameBean);
                }
             }
         }
 
-        for(var newNameBean : beans.get(beanClazz).values()){
+        for(var newNameBean : beans.get(beanClazz).keySet()){
             if(field.getName().equals(newNameBean)){
                 return beans.get(beanClazz).get(newNameBean);
             }

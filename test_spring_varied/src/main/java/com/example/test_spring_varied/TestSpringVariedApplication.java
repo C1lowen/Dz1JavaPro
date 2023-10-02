@@ -13,23 +13,19 @@ public class TestSpringVariedApplication {
 
     public static void main(String[] args) throws Exception{
 
-//        ApplicationContext applicationContext = SpringApplication.run(TestSpringVariedApplication.class);
-//
-//        Map<String, MyService> beansOfType = applicationContext.getBeansOfType(MyService.class);
-//        System.out.println(1);
-
 
         Context context = new Context(AppConfig.class);
 
-        System.out.println(context.getBean(MyController.class));
-
-        MyController controller = context.getBean(MyController.class);
-        controller.sayMyController();
 
 
-        MyServiceRel myServiceRel = context.getBean(MyServiceRel.class);
+//        MyController controller = context.getBean(MyController.class, "myController");
+//        controller.sayMyController();
 
-        MyService myService = context.getBean(MyService.class);
+
+        MyServiceRel myServiceRel = context.getBean(MyServiceRel.class, "fsdfsd");
+        myServiceRel.sayMyServiceRel();
+
+        MyService myService = context.getBean(MyService.class, "myService");
 
 
 
