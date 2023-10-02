@@ -75,13 +75,9 @@ public class Context {
 
     public static Object checkTiming(Object clazz) throws Exception{
         if(clazz.getClass().getInterfaces().length != 0) {
-            boolean checkTiming = false;
-            for (Method method : clazz.getClass().getDeclaredMethods()) {
-                if (method.isAnnotationPresent(Timing.class)) {
-                    checkTiming = true;
-                    break;
-                }
-            }
+
+            boolean checkTiming = Arrays.stream(clazz.getClass().getDeclaredMethods())
+                    .anyMatch(a -> a.isAnnotationPresent(Timing.class));
 
             if (checkTiming) {
                 Object proxy = Proxy.newProxyInstance(clazz.getClass().getClassLoader(), clazz.getClass().getInterfaces(), new InvocationHandler() {

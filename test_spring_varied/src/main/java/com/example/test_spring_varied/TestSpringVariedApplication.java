@@ -22,10 +22,11 @@ public class TestSpringVariedApplication {
 //        controller.sayMyController();
 
 
-        MyServiceRel myServiceRel = context.getBean(MyServiceRel.class, "fsdfsd");
-        myServiceRel.sayMyServiceRel();
+//        MyServiceRel myServiceRel = context.getBean(MyServiceRel.class, "fsdfsd");
+//        myServiceRel.sayMyServiceRel();
 
-        MyService myService = context.getBean(MyService.class, "myService");
+        MyService myService = context.getBean(MyServiceRel.class, "fsdfsd");
+        myService.sayMyServiceRel();
 
 
 
