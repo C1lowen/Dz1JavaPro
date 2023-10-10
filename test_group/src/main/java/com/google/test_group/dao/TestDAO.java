@@ -2,7 +2,10 @@ package com.google.test_group.dao;
 
 import com.google.test_group.controller.Ticket;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
 
 import java.util.ArrayList;
@@ -13,7 +16,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-
+@Repository
 public class TestDAO {
 
     @Value("${base.jdbcURL}")

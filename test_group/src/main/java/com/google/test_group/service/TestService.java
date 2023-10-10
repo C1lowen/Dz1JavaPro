@@ -2,12 +2,17 @@ package com.google.test_group.service;
 
 import com.google.test_group.controller.Ticket;
 import com.google.test_group.dao.TestDAO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 
 import java.util.List;
 
+@Service
 public class TestService {
-    private TestDAO testDAO = new TestDAO();
+
+    @Autowired
+    private TestDAO testDAO;
     public List<Ticket> execute(){
         return testDAO.executeTicketsAll();
     }
