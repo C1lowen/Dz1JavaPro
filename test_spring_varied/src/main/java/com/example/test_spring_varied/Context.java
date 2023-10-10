@@ -76,22 +76,17 @@ public class Context {
     public static Object checkTiming(Object clazz) throws Exception{
         if(clazz.getClass().getInterfaces().length != 0) {
 
-            boolean checkTiming = Arrays.stream(clazz.getClass().getDeclaredMethods())
-                    .anyMatch(a -> a.isAnnotationPresent(Timing.class));
+            return  Arrays.stream(clazz.getClass().getDeclaredMethods())
+                    .filter(a -> a.isAnnotationPresent(Timing.class))
+                    .findAny()
+                    .map(method -> Proxy.newProxyInstance(clazz.getClass().getClassLoader(), clazz.getClass().getInterfaces(), (proxy, proxyMethod, args) -> {
+                            long start = System.currentTimeMillis();
+                            Object invoke = method.invoke(clazz, args);
+                            System.out.println("Время выполнения: " + (System.currentTimeMillis() - start));
+                            return invoke;
+                    }))
+                    .orElse(clazz);
 
-            if (checkTiming) {
-                Object proxy = Proxy.newProxyInstance(clazz.getClass().getClassLoader(), clazz.getClass().getInterfaces(), new InvocationHandler() {
-                    @Override
-                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                        long start = System.currentTimeMillis();
-                        Object invoke = method.invoke(clazz, args);
-                        System.out.println("Время выполнения: " + (System.currentTimeMillis() - start));
-                        return invoke;
-                    }
-                });
-
-                return proxy;
-            }
         }
 
         return clazz;

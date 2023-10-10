@@ -1,6 +1,7 @@
 package com.google.test_group.controller;
 
 
+import com.google.test_group.dao.TestDAO;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -26,10 +27,17 @@ public class TestController {
         return service.execute();
     }
 
-    @GetMapping("/tickets/free")
-    public List<Ticket> printFreeTicket() {
-        return service.executeFree();
+    @PostMapping("/tickets/add")
+    public void addTicket(@RequestBody Ticket ticket) {
+        service.addNewTicket(ticket);
     }
+
+//    @GetMapping("/tickets/free")
+//    public List<Ticket> printFreeTicket() {
+//        return service.executeFree();
+//    }
+
+
 
 
     @GetMapping("/tickets/headers")
@@ -81,15 +89,15 @@ public class TestController {
 //    }
 
 
-    @PostMapping("tickets/reservation")
-    public String reservation3(@RequestBody @Validated ReservationRequest data) {        //3 способ
-
-        boolean result = service.executeReservation(data.getSrc(), data.getDest());
-
-        if (result) {
-            return "Билет успешно забронирован!";
-        } else {
-            return "Билета не существует или он уже был забронирован";
-        }
-    }
+//    @PostMapping("tickets/reservation")
+//    public String reservation3(@RequestBody @Validated ReservationRequest data) {        //3 способ
+//
+//        boolean result = service.executeReservation(data.getSrc(), data.getDest());
+//
+//        if (result) {
+//            return "Билет успешно забронирован!";
+//        } else {
+//            return "Билета не существует или он уже был забронирован";
+//        }
+//    }
 }

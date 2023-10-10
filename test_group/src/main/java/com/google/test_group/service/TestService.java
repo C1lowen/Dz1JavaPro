@@ -9,14 +9,20 @@ import java.util.List;
 public class TestService {
     private TestDAO testDAO = new TestDAO();
     public List<Ticket> execute(){
-        return testDAO.executeAll();
+        return testDAO.executeTicketsAll();
     }
 
-    public List<Ticket> executeFree(){
-        return testDAO.executeFreeTicket();
+    public void addNewTicket(Ticket newTicket){
+        testDAO.executeNewTickets(newTicket);
     }
+//
+//    public List<Ticket> executeFree(){
+//        return testDAO.executeFreeTicket();
+//    }
 
-    public boolean executeReservation(String src, String dest){
-       return testDAO.reservationTicket(src, dest);
-    }
+
+
+//    public boolean executeReservation(String src, String dest){
+//       return testDAO.reservationTicket(src, dest);
+//    }
 }

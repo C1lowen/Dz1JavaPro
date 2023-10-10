@@ -2,18 +2,19 @@ package com.google.test_group.controller;
 
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.Size;
+
 
 public class Ticket {
 
+   private int id;
+    private String src;
+    private String dest;
+    private boolean isBooked;
 
-    Integer id;
-    String src;
-    String dest;
-    boolean isBooked;
 
-
-    public Ticket(Integer id, String src, String dest, boolean isBooked) {
+    public Ticket( Integer id, String src, String dest, boolean isBooked) {
         this.id = id;
         this.src = src;
         this.dest = dest;
@@ -23,11 +24,12 @@ public class Ticket {
     public Ticket() {
     }
 
-    public Integer getId() {
+
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -47,12 +49,12 @@ public class Ticket {
         this.dest = dest;
     }
 
-    public boolean isBooked() {
+    public boolean isIsBooked() {
         return isBooked;
     }
 
-    public void setBooked(boolean booked) {
-        isBooked = booked;
+    public void setIsBooked(boolean isBooked) {
+        this.isBooked = isBooked;
     }
 
 
